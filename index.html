@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>donut⁴</title>
+</head>
+<body>
+    <script src="https://cdn.rawgit.com/znah/mathbox/593bdab1/build/mathbox-bundle.js"></script>
+
+<script>
+  var mathbox = mathBox({
+      plugins: ['core', 'controls', 'cursor', 'mathbox'],
+      controls: { klass: THREE.OrbitControls },
+    });
+var three = mathbox.three;
+three.renderer.setClearColor(new THREE.Color(0x000000), 1.0);
+three.camera.position.set(-1, 1, 2);
+
+var view = mathbox.stereographic4({position:[0, 0, 0], scale:[0.5, 0.5, 0.5]});
+view.area({id:"points", width:100, height:100, live:false, expr: (emit, x, y) => {
+   var p = Math.PI*x;
+   var q = Math.PI*y;
+   emit(Math.cos(p), Math.sin(p), Math.cos(q), Math.sin(q));
+}})
+  .clock({speed:0.4})
+  .transform4({}, {matrix:function(t) {
+    var c = Math.cos(t), s = Math.sin(t);
+    return [c, 0, 0,-s,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            s, 0, 0, c];
+  }})  
+  .surface({fill:false, color:"#ecba8e", shaded:true, zBias:-5})
+  .lerp({height:30})
+    .line({color:"#df8c43"})
+  .transpose({order:"yx", source:"#points"})
+    .lerp({height:30}).line({color:"#df8c43"});
+</script>
+</body>
+</html>
