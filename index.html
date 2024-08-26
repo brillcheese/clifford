@@ -3,39 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>donut⁴</title>
+    <title>spu</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-image: url("https://files.catbox.moe/s51iem.jpeg");
+            background-size: cover;
+        }
+        #confetti-button {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: transparent;
+            color: transparent;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width:100%;height:100%
+        }
+    </style>
 </head>
 <body>
-    <script src="https://cdn.rawgit.com/znah/mathbox/593bdab1/build/mathbox-bundle.js"></script>
+    <div id="tsparticles" style="position: absolute; width: 100%; height: 100%;"></div>
+    <button id="confetti-button">Play Confetti</button>
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/confetti@3.0.3/tsparticles.confetti.bundle.min.js"></script>
+    <script>
+        const audio = new Audio('https://files.catbox.moe/cs6zg0.mp3');
+        const confet = new Audio('https://files.catbox.moe/u2mm8i.mp3');
 
-<script>
-  var mathbox = mathBox({
-      plugins: ['core', 'controls', 'cursor', 'mathbox'],
-      controls: { klass: THREE.OrbitControls },
+        function playConfetti() {
+    audio.load();
+    confet.load();
+
+    Promise.all([
+
+    confet.play(),
+        audio.play()
+    ]).then(() => {
+        confetti({
+            spread: 360,
+            ticks: 50,
+            gravity: 1,
+            decay: 0.95,
+            startVelocity: 30,
+            particleCount: 100,
+            scalar: 10,
+            shapes: ["image"],
+            shapeOptions: {
+                image: [{
+                    src: "https://files.catbox.moe/6lb3sv.png",
+                    width: 32,
+                    height: 32,
+                }],
+            },
+        });
+    }).catch(err => {
+        console.error("Error playing audio:", err);
     });
-var three = mathbox.three;
-three.renderer.setClearColor(new THREE.Color(0x000000), 1.0);
-three.camera.position.set(-1, 1, 2);
+}
 
-var view = mathbox.stereographic4({position:[0, 0, 0], scale:[0.5, 0.5, 0.5]});
-view.area({id:"points", width:100, height:100, live:false, expr: (emit, x, y) => {
-   var p = Math.PI*x;
-   var q = Math.PI*y;
-   emit(Math.cos(p), Math.sin(p), Math.cos(q), Math.sin(q));
-}})
-  .clock({speed:0.4})
-  .transform4({}, {matrix:function(t) {
-    var c = Math.cos(t), s = Math.sin(t);
-    return [c, 0, 0,-s,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            s, 0, 0, c];
-  }})  
-  .surface({fill:false, color:"#ecba8e", shaded:true, zBias:-5})
-  .lerp({height:30})
-    .line({color:"#df8c43"})
-  .transpose({order:"yx", source:"#points"})
-    .lerp({height:30}).line({color:"#df8c43"});
-</script>
+
+        document.getElementById('confetti-button').addEventListener('click', playConfetti);
+    </script>
 </body>
 </html>
